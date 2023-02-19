@@ -89,10 +89,20 @@ def list_to_js(lst: ast.List):
     return "[" + ",".join(map(lambda c: to_js(c), lst.elts)) + "]"
 
 @_to_js(ast.UnaryOp)
-def bin_op_to_js(op: ast.UnaryOp):
+def unary_op_to_js(op: ast.UnaryOp):
     op_str = operator_to_str_map[type(op.op)]
     assert op_str != None
     return f"({op_str} {to_js(op.operand)})"
+
+@_to_js(ast.If)
+def if_to_js(ifStmt: ast.If):
+    return (
+        "if ("
+        + to_js(ifStmt.test)
+        + ")"
+        + to_js_codeblock(ifStmt.body)
+        + ("else" + to_js_codeblock(ifStmt.orelse) if len(ifStmt.orelse) > 0 else "")
+    )
 
 @_to_js(ast.BinOp)
 def bin_op_to_js(op: ast.BinOp):
@@ -196,6 +206,18 @@ def function_def_to_js(funDef: ast.FunctionDef):
 
 def to_js(pyAst):
     return pyAst.__class__._to_js(pyAst)
+
+def to_js_codeblock(lst):
+    if(len(lst) == 0):
+        return ""
+    return (
+        "{\n"
+        +  map_to_js(lst, ";\n")
+        + "\n}"
+    )
+
+def map_to_js(lst, sep):
+    return sep.join(map(lambda x: to_js(x), lst))
 
 
 if (__name__ == "__main__"):
