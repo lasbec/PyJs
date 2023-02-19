@@ -60,6 +60,11 @@ def constant_to_js(const: ast.Constant):
         return '"' + const.value + '"'
     raise Exception(f"constant not implemented for {valType}.")
 
+@_to_js(ast.List)
+def list_to_js(lst: ast.List):
+    return "[" + ",".join(map(lambda c: py_ast_to_js(c), lst.elts)) + "]"
+
+
 @_to_js(ast.FunctionDef)
 def function_def_to_js(funDef: ast.FunctionDef):
     assert len(funDef.decorator_list) == 0
