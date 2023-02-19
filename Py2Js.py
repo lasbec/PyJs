@@ -47,6 +47,19 @@ def assign_to_js(assignment: ast.Assign):
 def assign_to_js(name: ast.Name):
     return name.id
 
+@_to_js(ast.Constant)
+def constant_to_js(const: ast.Constant):
+    valType = type(const.value)
+    if(valType == float):
+        return const.value
+    elif(valType == int):
+        return f"{const.value}n"
+    elif(valType == bool):
+        return "true" if const.value else "false"
+    elif(valType == str):
+        return '"' + const.value + '"'
+    raise Exception(f"constant not implemented for {valType}.")
+
 @_to_js(ast.FunctionDef)
 def function_def_to_js(funDef: ast.FunctionDef):
     assert len(funDef.decorator_list) == 0
