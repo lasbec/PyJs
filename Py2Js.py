@@ -22,7 +22,7 @@ def _to_js(cls):
 
 @_to_js(ast.Module)
 def module_to_js(mod):
-    return "\n".join(map(lambda c: py_ast_to_js(c),mod.body))
+    return "\n".join(map(lambda c: to_js(c),mod.body))
 
 @_to_js(ast.Pass)
 def pass_to_js(passOp):
@@ -34,11 +34,11 @@ def assign_to_js(assignment: ast.Assign):
     return (
         "let "
         +
-        py_ast_to_js(assignment.targets[0])
+        to_js(assignment.targets[0])
         + 
         " = "
         +
-        py_ast_to_js(assignment.value)
+        to_js(assignment.value)
         + 
         ";"
     )
@@ -51,7 +51,7 @@ def assign_to_js(name: ast.Name):
 def constant_to_js(const: ast.Constant):
     valType = type(const.value)
     if(valType == float):
-        return const.value
+        return f"{const.value}"
     elif(valType == int):
         return f"{const.value}n"
     elif(valType == bool):
@@ -62,8 +62,16 @@ def constant_to_js(const: ast.Constant):
 
 @_to_js(ast.List)
 def list_to_js(lst: ast.List):
-    return "[" + ",".join(map(lambda c: py_ast_to_js(c), lst.elts)) + "]"
+    return "[" + ",".join(map(lambda c: to_js(c), lst.elts)) + "]"
 
+
+@_to_js(ast.BinOp)
+def bin_op_to_js(op: ast.BinOp):
+    return f"{to_js(op.left)} {to_js(op.op)} {to_js(op.right)}"
+
+@_to_js(ast.Add)
+def add_to_js(add:ast.Add):
+    return "+"
 
 @_to_js(ast.FunctionDef)
 def function_def_to_js(funDef: ast.FunctionDef):
@@ -80,14 +88,14 @@ def function_def_to_js(funDef: ast.FunctionDef):
         + "("
         + ",".join(map(lambda a: a.arg, args.args))
         + "){\n" 
-        +  "\n".join(map(lambda c: py_ast_to_js(c), funDef.body)) 
+        +  "\n".join(map(lambda c: to_js(c), funDef.body)) 
         + "\n}"
         )
 
-def py_ast_to_js(pyAst):
+def to_js(pyAst):
     return pyAst.__class__._to_js(pyAst)
 
 
 print(ast.dump(fileAst, indent=4))
 
-print("-----------\n\n\n", py_ast_to_js(fileAst))
+print("-----------\n\n\n", to_js(fileAst))
