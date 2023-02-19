@@ -77,7 +77,7 @@ def constant_to_js(const: ast.Constant):
     if(valType == float):
         return f"{const.value}"
     elif(valType == int):
-        return f"{const.value}n"
+        return f"{const.value}"
     elif(valType == bool):
         return "true" if const.value else "false"
     elif(valType == str):
@@ -88,6 +88,11 @@ def constant_to_js(const: ast.Constant):
 def list_to_js(lst: ast.List):
     return "[" + ",".join(map(lambda c: to_js(c), lst.elts)) + "]"
 
+@_to_js(ast.UnaryOp)
+def bin_op_to_js(op: ast.UnaryOp):
+    op_str = operator_to_str_map[type(op.op)]
+    assert op_str != None
+    return f"({op_str} {to_js(op.operand)})"
 
 @_to_js(ast.BinOp)
 def bin_op_to_js(op: ast.BinOp):

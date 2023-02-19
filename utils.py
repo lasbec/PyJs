@@ -18,7 +18,7 @@ def test_eq_console_output(py_file_path, verbose):
         js_output = run_js_file(js_file_path)
         py_output = run_py_file(py_file_path)
         try:
-            assert js_output == py_output
+            assert js_output == py_output.replace("\r\n", "\n")
             print("passed", py_file_path)
         except AssertionError:
             print("--FAILED--", py_file_path)
